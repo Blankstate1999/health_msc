@@ -1,0 +1,47 @@
+---
+title: "Top 50 South West localities by Index of Multiple Deprivation (IMD) 2019"
+author: "Lee Mercer"
+date: '22 June 2022'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE, message=FALSE}
+library(tidyverse)
+
+# Import data
+imd_2019 <- read_csv("imd_2019.csv")
+
+# Rename columns
+tidy_imd <- imd_2019 %>%
+  rename(lsoa_code = "LSOA code (2011)",
+         lsoa_name = "LSOA name (2011)",
+         dist_code = "Local Authority District code (2019)",
+         dist_name = "Local Authority District name (2019)",
+         imd_rank = "Index of Multiple Deprivation (IMD) Rank",
+         imd_dec = "Index of Multiple Deprivation (IMD) Decile")
+
+tidy_imd[tidy_imd == "Bath and North East Somerset"] <- "BANES"
+
+# Convert to data frame
+imd_df <- as.data.frame(tidy_imd)
+
+# Extra local data
+imd_local <- subset(imd_df, 
+                    dist_name == "Cheltenham" | dist_name == "Swindon" | 
+                      dist_name == "Gloucester" | dist_name == "BANES")
+
+rank_order <- imd_local[order(imd_local$imd_rank, decreasing = FALSE),]
+
+top_50 <- rank_order %>% slice(1:50)
+
+top_50 <- subset(top_50, select = -lsoa_name)
+top_50 <- subset(top_50, select = -dist_code)
+```
+
+```{r, echo=FALSE, results=TRUE}
+knitr::kable(top_50)
+```
