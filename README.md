@@ -1,1 +1,1 @@
-# health_msc
+# health_psych_msc
